@@ -19,5 +19,16 @@ namespace PipeDream.VariantAnnotation
 
             return variants;
         }
+
+        public static List<AnnotatedVariant> DeepCopy(List<AnnotatedVariant> variants)
+        {
+            var newVariants = new List<AnnotatedVariant>(variants.Count);
+            for (int i = 0; i < variants.Count; i++)
+            {
+                newVariants.Add(AnnotatedVariant.Create(variants[i].Position));
+            }
+
+            return newVariants;
+        }
     }
 }

@@ -6,7 +6,6 @@ namespace PipeDream.VariantAnnotation
     {
 
         public static readonly string[] Alleles = {"A", "C", "G", "T", "AA", "AC", "AT", "AG", "CC", "CG", "CT", "CA", "GA", "GC", "GT", "GG","TA", "TC", "TT", "TG"};
-        private static Random _random = new Random();
         
         public readonly int Position;
         public string RefAllele ;
@@ -25,8 +24,8 @@ namespace PipeDream.VariantAnnotation
 
         public static AnnotatedVariant Create(int position)
         {
-            var refAllele = Alleles[_random.Next(0, Alleles.Length - 1)];
-            var altAllele = Alleles[_random.Next(0, Alleles.Length - 1)];
+            var refAllele = Alleles[(position*13) % Alleles.Length];
+            var altAllele = Alleles[(position*17) % Alleles.Length];
             
             return new AnnotatedVariant(position, refAllele, altAllele);
         }

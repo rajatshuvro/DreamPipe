@@ -1,0 +1,26 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 2 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet restore  /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 in /Users/rroy1/development/DreamPipe/PipeDream/PipeDream/bin/Release/netcoreapp3.1/888a0bdf-0436-42a9-abb7-7708d022f0ee
+// command took 1.32s and exited with 0
+// start dotnet build -c Release  --no-restore /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 in /Users/rroy1/development/DreamPipe/PipeDream/PipeDream/bin/Release/netcoreapp3.1/888a0bdf-0436-42a9-abb7-7708d022f0ee
+// command took 1.83s and exited with 0
+// ***** Done, took 00:00:03 (3.23 sec)   *****
+// Found 2 benchmarks:
+//   Pipelines.SerialAnnotation: DefaultJob
+//   Pipelines.ParallelAnnotation: DefaultJob
+
+// **************************
+// Benchmark: Pipelines.SerialAnnotation: DefaultJob
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet "888a0bdf-0436-42a9-abb7-7708d022f0ee.dll" --benchmarkName "PipeDream.Pipelines.SerialAnnotation" --job "Default" --benchmarkId 0 in /Users/rroy1/development/DreamPipe/PipeDream/PipeDream/bin/Release/netcoreapp3.1/888a0bdf-0436-42a9-abb7-7708d022f0ee/bin/Release/netcoreapp3.1
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// Runtime=.NET Core 3.1.2 (CoreCLR 4.700.20.6602, CoreFX 4.700.20.6702), X64 RyuJIT
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+OverheadJitting  1: 1 op, 280399.00 ns, 280.3990 us/op

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace PipeDream.VariantAnnotation
 {
@@ -7,6 +8,7 @@ namespace PipeDream.VariantAnnotation
     {
         public static void Annotate(AnnotatedVariant variant)
         {
+            Thread.Sleep(1);
             var position = variant.Position;
             
             var n = 1 + position % 13;// that its never 0

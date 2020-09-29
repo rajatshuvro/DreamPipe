@@ -8,8 +8,7 @@ namespace PipeDream.VariantAnnotation
         public double AlleleFrequency;
         public int[] PubMedIds;
         public static readonly string[] PathogenicitySet = { "benign", "likely benign", "likely pathogenic", "pathogenic", "unknown"};
-
-        private static readonly Random _random = new Random();
+        
 
         private SuppAnnotation(double alleleFrequency, string pathogenicity, int[] pubMedIds)
         {
@@ -20,7 +19,7 @@ namespace PipeDream.VariantAnnotation
 
         public static SuppAnnotation Create(int position)
         {
-            var alleleFrequency = _random.Next(0,1_000_000)*1.0/1_000_000;
+            var alleleFrequency = (position % 978403)*1.0/1_000_000;
             var pathogenicity = PathogenicitySet[position % PathogenicitySet.Length];
             var pubmedIds = new int[1 + position % 11];
             for (int i = 0; i < pubmedIds.Length; i++)

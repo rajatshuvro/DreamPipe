@@ -15,6 +15,7 @@ namespace PipeDream.Annotator
         private Thread _coreThread;
         private Thread _saThread;
 
+        private bool _isCancelled;
         public ParallelAnnotator()
         {
             _coreSemaphore = new SemaphoreSlim(0);
@@ -30,8 +31,9 @@ namespace PipeDream.Annotator
 
         public void Complete()
         {
-            _coreThread.Abort();
-            _saThread.Abort();
+            _isCancelled = true;
+            _coreSemaphore.Release();
+            _saSemaphore.Release();
         }
 
         private void CoreAnnotate()
@@ -39,8 +41,9 @@ namespace PipeDream.Annotator
             while (true)
             {
                 _coreSemaphore.Wait();
+                if (_isCancelled) break;
                 CoreAnnotationProvider.Annotate(_variant);
-                _coreDone.Wait();
+                _coreDone.Release();
             }
         }
         
@@ -49,13 +52,15 @@ namespace PipeDream.Annotator
             while (true)
             {
                 _saSemaphore.Wait();
+                if (_isCancelled) break;
                 SuppAnnotationProvider.Annotate(_variant);
-                _saDone.Wait();
+                _saDone.Release();
             }
         }
 
         public void Annotate(AnnotatedVariant variant)
         {
+            if (_isCancelled) return;
             _variant = variant;
             //indicate to the threads that new variant is ready
             _coreSemaphore.Release();
