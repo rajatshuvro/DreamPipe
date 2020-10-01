@@ -13,7 +13,7 @@ namespace PipeDream.VariantAnnotation
 
         public AnnotatedTranscript[] Transcripts;
 
-        public SuppAnnotation SuppAnno;
+        public SuppAnnotation[] SuppAnnotations;
 
         private AnnotatedVariant( int position, string refAllele, string altAllele)
         {

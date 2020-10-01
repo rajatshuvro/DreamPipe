@@ -13,8 +13,7 @@ namespace PipeDream.VariantAnnotation
         };
         public string Id;
         public string[] Consequences;
-        private static readonly Random _random = new Random();
-
+        
         private AnnotatedTranscript(string id, string[] consequences)
         {
             Id = id;
@@ -23,13 +22,15 @@ namespace PipeDream.VariantAnnotation
 
         public static AnnotatedTranscript Create(int position, int n)
         {
-            var x = 1 + position % 9991;
+            var x = 1 + position % Utilities.Prime4;
             var id = $"TRAN_{x:0000000}.{n}";
             var consequences = new string[1 + n % 7];
+            var random = position;
             for (int i = 0; i < consequences.Length; i++)
             {
-                var j = _random.Next(0, ConsequenceSet.Length - 1);
+                var j = random % consequences.Length;
                 consequences[i] = ConsequenceSet[j];
+                random ^= Utilities.Prime9;
             }
 
             return new AnnotatedTranscript(id, ConsequenceSet);

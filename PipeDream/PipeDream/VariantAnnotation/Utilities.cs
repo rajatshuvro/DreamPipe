@@ -5,6 +5,9 @@ namespace PipeDream.VariantAnnotation
 {
     public class Utilities
     {
+        public const int Prime4 = 7507;
+        public const int Prime6 = 978403;
+        public const int Prime9 = 988724531;
         public static List<AnnotatedVariant> GetVariants(int n)
         {
             var delta = new Random();

@@ -9,6 +9,8 @@ namespace PipeDream
         {
             Console.WriteLine("Dreaming for the optimal pipeline!");
             BenchmarkSwitcher.FromAssembly(typeof(PipeDreamer).Assembly).Run(args);
+            
+            //check if the output files are identical
         }
 
         
