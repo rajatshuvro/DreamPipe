@@ -30,7 +30,7 @@ namespace LayRunner
             for (int i = 0; i < IterationCount; i++)
             {
                 pipelines.BatchAnnotation();
-                Console.WriteLine($"completed run {i + 1}");
+                //Console.WriteLine($"completed run {i + 1}");
             }
 
             var tock = DateTime.Now;
@@ -47,7 +47,7 @@ namespace LayRunner
             for (int i = 0; i < IterationCount; i++)
             {
                 pipelines.ParallelAnnotation();
-                Console.WriteLine($"completed run {i + 1}");
+                //Console.WriteLine($"completed run {i + 1}");
             }
 
             var tock = DateTime.Now;
@@ -63,7 +63,7 @@ namespace LayRunner
             for (int i = 0; i < IterationCount; i++)
             {
                 pipelines.SerialAnnotation();
-                Console.WriteLine($"completed run {i + 1}");
+                //Console.WriteLine($"completed run {i + 1}");
             }
 
             var tock = DateTime.Now;
