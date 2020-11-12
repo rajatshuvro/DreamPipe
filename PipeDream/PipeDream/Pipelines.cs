@@ -14,6 +14,7 @@ namespace PipeDream
     {
         public const string SerialJson = "/Users/rroy1/development/TestDatasets/outputs/SerialAnnotation.json";
         public const string ParallelJson = "/Users/rroy1/development/TestDatasets/outputs/ParallelAnnotation.json";
+        public const string ConcurrentQueueJson = "/Users/rroy1/development/TestDatasets/outputs/ConcurrentQueueAnnotation.json";
         public const string BatchJson = "/Users/rroy1/development/TestDatasets/outputs/BatchParallelAnnotation.json";
         
         private static readonly List<AnnotatedVariant> Variants = VariantAnnotation.Utilities.GetVariants(100_000);
@@ -50,7 +51,26 @@ namespace PipeDream
                 parallelAnnotator.Complete();
             }
         }
-        
+        [Benchmark]
+        public void ConcurrentAnnotation()
+        {
+            var fileName = ConcurrentQueueJson;
+            var fileStream = File.Create(fileName);
+            var copyVariants = PipeDream.VariantAnnotation.Utilities.DeepCopy(Variants);
+            using (var writer = new BinaryWriter(fileStream))
+            {
+                var annotator = new ConQAnnotator(500);
+                foreach (var variant in copyVariants)
+                {
+                    annotator.Add(variant);
+                }
+                annotator.Complete();
+                foreach (var variant in copyVariants)
+                {
+                    writer.Write(Utf8Json.JsonSerializer.Serialize(variant));
+                }
+            }
+        }
         [Benchmark]
         public void BatchAnnotation()
         {
@@ -83,5 +103,7 @@ namespace PipeDream
                 annotator.Complete();
             }
         }
+
+        
     }
 }

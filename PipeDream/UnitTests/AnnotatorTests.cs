@@ -8,7 +8,7 @@ namespace UnitTests
     public class AnnotatorTests
     {
         [Fact]
-        public void CompareOneOutput()
+        public void CompareOneOutput_parallel()
         {
             var position = 1234689;
             var variant1 = AnnotatedVariant.Create(position);
@@ -26,6 +26,25 @@ namespace UnitTests
             Assert.Equal(serialJson, parallelJson);
         }
         
+        [Fact]
+        public void CompareOneOutput_conQ()
+        {
+            var position = 1234689;
+            var variant1 = AnnotatedVariant.Create(position);
+            var variant2 = AnnotatedVariant.Create(position);
+            
+            SerialAnnotator.Annotate(variant1);
+            var serialJson = Utf8Json.JsonSerializer.ToJsonString(variant1);
+
+            var conQAnnotator = new ConQAnnotator(50);
+            conQAnnotator.Add(variant2);
+            conQAnnotator.Complete();
+            
+            var conqJson = Utf8Json.JsonSerializer.ToJsonString(variant2);
+            
+            Assert.Equal(serialJson, conqJson);
+        }
+
         [Fact]
         public void CompareMany()
         {
@@ -48,6 +67,36 @@ namespace UnitTests
                 
             }
             parallelAnnotator.Complete();
+
+        }
+        
+        [Fact]
+        public void CompareMany_conQ()
+        {
+            var count = 1000;
+            var variants_1 = PipeDream.VariantAnnotation.Utilities.GetVariants(count);
+            var variants_2 = PipeDream.VariantAnnotation.Utilities.DeepCopy(variants_1);
+
+            var annotator = new ConQAnnotator(count > 10? count/10: count);
+            foreach (var variant in variants_1)
+            {
+                SerialAnnotator.Annotate(variant);
+            }
+            
+            foreach (var variant in variants_2)
+            {
+                annotator.Add(variant);
+            }
+            annotator.Complete();
+
+            for (int i = 0; i < variants_1.Count; i++)
+            {
+                var serialJson = Utf8Json.JsonSerializer.ToJsonString(variants_1[i]);
+                var parallelJson = Utf8Json.JsonSerializer.ToJsonString(variants_2[i]);
+            
+                Assert.Equal(serialJson, parallelJson);
+
+            }
 
         }
     }
