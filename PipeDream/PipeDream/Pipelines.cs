@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using PipeDream.Annotator;
@@ -31,6 +32,7 @@ namespace PipeDream
                     var copyVariant = AnnotatedVariant.Create(variant.Position);
                     SerialAnnotator.Annotate(copyVariant);
                     writer.Write(Utf8Json.JsonSerializer.Serialize(copyVariant));
+                    writer.Write('\n');
                 }
             }
         }
@@ -48,8 +50,35 @@ namespace PipeDream
                     var copyVariant = AnnotatedVariant.Create(variant.Position);
                     parallelAnnotator.Annotate(copyVariant);
                     writer.Write(Utf8Json.JsonSerializer.Serialize(copyVariant));
+                    writer.Write('\n');
                 }
                 parallelAnnotator.Complete();
+            }
+        }
+        
+        [Benchmark]
+        public void ChannelAnnotation()
+        {
+            var fileName = ChannelJson;
+            var fileStream = File.Create(fileName);
+            var copyVariants = PipeDream.VariantAnnotation.Utilities.DeepCopy(Variants);
+            using (var writer = new BinaryWriter(fileStream))
+            {
+                var annotator = new ChannelAnnotator();
+                Task.Run(async () =>
+                {
+                    foreach (var variant in copyVariants)
+                    {
+                        await annotator.Submit(variant);
+                    }    
+                    annotator.Complete();
+
+                });
+                foreach (var variant in copyVariants)
+                {
+                    writer.Write(Utf8Json.JsonSerializer.Serialize(variant));    
+                    writer.Write('\n');
+                }
             }
         }
         [Benchmark]
@@ -69,6 +98,7 @@ namespace PipeDream
                 foreach (var variant in copyVariants)
                 {
                     writer.Write(Utf8Json.JsonSerializer.Serialize(variant));
+                    writer.Write('\n');
                 }
             }
         }
@@ -92,6 +122,7 @@ namespace PipeDream
                     foreach (var item in variantBatch)
                     {
                         writer.Write(Utf8Json.JsonSerializer.Serialize(item));    
+                        writer.Write('\n');
                     }
                     variantBatch.Clear();
                 }
@@ -99,7 +130,8 @@ namespace PipeDream
                 annotator.Annotate(variantBatch);
                 foreach (var item in variantBatch)
                 {
-                    writer.Write(Utf8Json.JsonSerializer.Serialize(item));    
+                    writer.Write(Utf8Json.JsonSerializer.Serialize(item));   
+                    writer.Write('\n');
                 }
                 annotator.Complete();
             }

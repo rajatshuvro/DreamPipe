@@ -144,11 +144,9 @@ namespace UnitTests
                 {
                     await annotator.Submit(variant);
                 }    
+                annotator.Complete();
             });
             
-            Thread.Sleep(50);
-            annotator.Complete();
-
             for (int i = 0; i < variants_1.Count; i++)
             {
                 var serialJson = Utf8Json.JsonSerializer.ToJsonString(variants_1[i]);

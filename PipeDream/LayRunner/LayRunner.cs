@@ -5,7 +5,7 @@ namespace LayRunner
 {
     public class LayRunner
     {
-        private const int DefaultIterationCount = 5;
+        private const int DefaultIterationCount = 1;
         static void Main(string[] args)
         {
             var iterationCount = (args.Length > 0) ? int.Parse(args[0]) : DefaultIterationCount; 
@@ -23,6 +23,9 @@ namespace LayRunner
             
             var concurrentTimeSpan = GetConcurrentRunTime(pipelines, iterationCount);
             Console.WriteLine("Concurrent queue run time (seconds) per iteration:"+ concurrentTimeSpan.TotalSeconds/iterationCount);
+            
+            var channelTimeSpan = GetChannelRunTime(pipelines, iterationCount);
+            Console.WriteLine("Channel annotator run time (seconds) per iteration:"+ channelTimeSpan.TotalSeconds/iterationCount);
         }
 
         private static TimeSpan GetBatchRunTime(Pipelines pipelines, int iterationCount)
@@ -75,6 +78,23 @@ namespace LayRunner
 
             var batchTimeSpan = new TimeSpan(tock.Ticks - tick.Ticks);
             return batchTimeSpan;
+        }
+        
+        private static TimeSpan GetChannelRunTime(Pipelines pipelines, int iterationCount)
+        {
+            Console.WriteLine("running channel annotator");
+            var tick = DateTime.Now;
+
+            for (int i = 0; i < iterationCount; i++)
+            {
+                pipelines.ChannelAnnotation();
+                //Console.WriteLine($"completed run {i + 1}");
+            }
+
+            var tock = DateTime.Now;
+
+            var timeSpan = new TimeSpan(tock.Ticks - tick.Ticks);
+            return timeSpan;
         }
         private static TimeSpan GetSerialRunTime(Pipelines pipelines, int iterationCount)
         {
