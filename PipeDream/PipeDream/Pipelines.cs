@@ -15,6 +15,7 @@ namespace PipeDream
         public const string SerialJson = "/Users/rroy1/development/TestDatasets/outputs/SerialAnnotation.json";
         public const string ParallelJson = "/Users/rroy1/development/TestDatasets/outputs/ParallelAnnotation.json";
         public const string ConcurrentQueueJson = "/Users/rroy1/development/TestDatasets/outputs/ConcurrentQueueAnnotation.json";
+        public const string ChannelJson = "/Users/rroy1/development/TestDatasets/outputs/ChannelAnnotation.json";
         public const string BatchJson = "/Users/rroy1/development/TestDatasets/outputs/BatchParallelAnnotation.json";
         
         private static readonly List<AnnotatedVariant> Variants = VariantAnnotation.Utilities.GetVariants(100_000);
