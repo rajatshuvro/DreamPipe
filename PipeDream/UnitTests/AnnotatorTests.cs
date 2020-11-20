@@ -138,7 +138,7 @@ namespace UnitTests
                 SerialAnnotator.Annotate(variant);
             }
 
-            Task.Run(async () =>
+            var annotatorTask = Task.Run(async () =>
             {
                 foreach (var variant in variants_2)
                 {
@@ -146,6 +146,8 @@ namespace UnitTests
                 }    
                 annotator.Complete();
             });
+
+            annotatorTask.Wait();
             
             for (int i = 0; i < variants_1.Count; i++)
             {

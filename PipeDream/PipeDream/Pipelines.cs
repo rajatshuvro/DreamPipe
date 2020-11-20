@@ -65,7 +65,7 @@ namespace PipeDream
             using (var writer = new BinaryWriter(fileStream))
             {
                 var annotator = new ChannelAnnotator();
-                Task.Run(async () =>
+                var annotatorTask = Task.Run(async () =>
                 {
                     foreach (var variant in copyVariants)
                     {
@@ -74,6 +74,7 @@ namespace PipeDream
                     annotator.Complete();
 
                 });
+                annotatorTask.Wait();
                 foreach (var variant in copyVariants)
                 {
                     writer.Write(Utf8Json.JsonSerializer.Serialize(variant));    
