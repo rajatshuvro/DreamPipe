@@ -3,12 +3,12 @@ using PipeDream;
 
 namespace LayRunner
 {
-    public class LayRunner
+    public static class LayRunner
     {
         private const int DefaultIterationCount = 1;
         static void Main(string[] args)
         {
-            var iterationCount = (args.Length > 0) ? int.Parse(args[0]) : DefaultIterationCount; 
+            var iterationCount = args.Length > 0 ? int.Parse(args[0]) : DefaultIterationCount; 
             Console.WriteLine("Timing pipelines!");
             var pipelines = new Pipelines();
             

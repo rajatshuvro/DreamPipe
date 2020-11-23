@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace PipeDream.VariantAnnotation
 {
     public class SuppAnnotation

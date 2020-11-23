@@ -1,5 +1,3 @@
-using System;
-
 namespace PipeDream.VariantAnnotation
 {
     public class AnnotatedVariant

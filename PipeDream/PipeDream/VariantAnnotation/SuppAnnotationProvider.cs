@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace PipeDream.VariantAnnotation
@@ -8,6 +6,7 @@ namespace PipeDream.VariantAnnotation
     { 
         public static void Annotate(AnnotatedVariant variant)
         {
+            Thread.Sleep(1);
             var n = variant.Position % 19;
             variant.SuppAnnotations = new SuppAnnotation[n];
             var random = variant.Position;
