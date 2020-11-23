@@ -4,7 +4,7 @@ using PipeDream.VariantAnnotation;
 
 namespace PipeDream.Annotator
 {
-    public class BatchAnnotator
+    public class BatchParallelAnnotator
     {
         private SemaphoreSlim _coreSemaphore;
         private SemaphoreSlim _saSemaphore;
@@ -17,7 +17,7 @@ namespace PipeDream.Annotator
         private Thread _saThread;
 
         private bool _isCancelled;
-        public BatchAnnotator()
+        public BatchParallelAnnotator()
         {
             _coreSemaphore = new SemaphoreSlim(0);
             _saSemaphore = new SemaphoreSlim(0);

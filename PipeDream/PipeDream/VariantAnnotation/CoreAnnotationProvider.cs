@@ -4,9 +4,16 @@ namespace PipeDream.VariantAnnotation
 {
     public static class CoreAnnotationProvider
     {
+        private static byte _count=0;
         public static void Annotate(AnnotatedVariant variant)
         {
-            Thread.Sleep(1);
+            _count++;
+            if (_count == 10)
+            {
+                _count = 0;
+                Thread.Sleep(1);
+            }
+            
             var position = variant.Position;
             
             var n = 1 + position % 13;// that its never 0

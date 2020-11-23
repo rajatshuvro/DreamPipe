@@ -112,7 +112,7 @@ namespace PipeDream
             var fileStream = File.Create(fileName);
             using (var writer = new BinaryWriter(fileStream))
             {
-                var annotator = new BatchAnnotator();
+                var annotator = new BatchParallelAnnotator();
                 foreach (var variant in Variants)
                 {
                     var copyVariant = AnnotatedVariant.Create(variant.Position);
