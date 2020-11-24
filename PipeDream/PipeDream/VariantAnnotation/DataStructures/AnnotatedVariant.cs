@@ -1,4 +1,4 @@
-namespace PipeDream.VariantAnnotation
+namespace PipeDream.VariantAnnotation.DataStructures
 {
     public class AnnotatedVariant
     {
@@ -11,7 +11,9 @@ namespace PipeDream.VariantAnnotation
 
         public AnnotatedTranscript[] Transcripts;
 
-        public SuppAnnotation[] SuppAnnotations;
+        public string[] Ids;
+        public double[] AlleleFrequencies;
+        public ClinicalAnnotation ClinicalAnnotation;
 
         private AnnotatedVariant( int position, string refAllele, string altAllele)
         {
@@ -22,8 +24,8 @@ namespace PipeDream.VariantAnnotation
 
         public static AnnotatedVariant Create(int position)
         {
-            var refAllele = Alleles[(position*13) % Alleles.Length];
-            var altAllele = Alleles[(position*17) % Alleles.Length];
+            var refAllele = Alleles[position*13 % Alleles.Length];
+            var altAllele = Alleles[position*17 % Alleles.Length];
             
             return new AnnotatedVariant(position, refAllele, altAllele);
         }

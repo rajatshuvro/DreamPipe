@@ -1,7 +1,8 @@
-using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using PipeDream.VariantAnnotation;
+using PipeDream.VariantAnnotation.DataStructures;
+using PipeDream.VariantAnnotation.Providers;
 
 namespace PipeDream.Annotator
 {
@@ -9,38 +10,40 @@ namespace PipeDream.Annotator
     {
         public const int DefaultSize = 50;
         private readonly Channel<AnnotatedVariant> _coreChannel;
-        private readonly Channel<AnnotatedVariant> _saChannel;
+        private readonly Channel<AnnotatedVariant> _alleleFreqChannel;
+        private readonly Channel<AnnotatedVariant> _idChannel;
+        private readonly Channel<AnnotatedVariant> _clinicalChannel;
         //private readonly StreamWriter _writer;
-        private bool _leaveOpen;
-        private Thread _coreThread, _saThread;
+        private Task _coreTask, _alleleFreqTask, _idTask, _clinicalTask;
 
-        public ChannelAnnotator( int size = DefaultSize, bool leaveOpen = false)
+        public ChannelAnnotator( int size = DefaultSize)
         {
             //_writer = writer;
-            _leaveOpen = leaveOpen;
-            _coreChannel = Channel.CreateBounded<AnnotatedVariant>(DefaultSize);
-            _saChannel = Channel.CreateBounded<AnnotatedVariant>(DefaultSize);
+            _coreChannel = Channel.CreateBounded<AnnotatedVariant>(size);
+            _alleleFreqChannel = Channel.CreateBounded<AnnotatedVariant>(size);
+            _idChannel = Channel.CreateBounded<AnnotatedVariant>(size);
+            _clinicalChannel = Channel.CreateBounded<AnnotatedVariant>(size);
             
-            _coreThread = new Thread(CoreAnnotation);
-            _saThread = new Thread(SaAnnotation);
-            
-            _coreThread.Start();
-            _saThread.Start();
-            
+            _coreTask =  Task.Run(CoreAnnotation);
+            _alleleFreqTask = Task.Run(AddAlleleFreq);
+            _idTask = Task.Run(AddIds);
+            _clinicalTask = Task.Run(AddClinical);
         }
 
         public async ValueTask Submit(AnnotatedVariant variant)
         {
             await _coreChannel.Writer.WriteAsync(variant);
-            await _saChannel.Writer.WriteAsync(variant);
+            await _alleleFreqChannel.Writer.WriteAsync(variant);
+            await _idChannel.Writer.WriteAsync(variant);
+            await _clinicalChannel.Writer.WriteAsync(variant);
         }
         
         public void Complete()
         {
             _coreChannel.Writer.Complete();
-            _saChannel.Writer.Complete();
-            _coreThread.Join();
-            _saThread.Join();
+            _alleleFreqChannel.Writer.Complete();
+            _coreTask.Wait();
+            _alleleFreqTask.Wait();
         }
 
         private async void CoreAnnotation()
@@ -56,13 +59,36 @@ namespace PipeDream.Annotator
             //_saChannel.Writer.Complete();
         }
         
-        private async void SaAnnotation()
+        private async void AddAlleleFreq()
         {
-            while (await _saChannel.Reader.WaitToReadAsync())
+            while (await _alleleFreqChannel.Reader.WaitToReadAsync())
             {
-                while (_saChannel.Reader.TryRead(out var variant))
+                while (_alleleFreqChannel.Reader.TryRead(out var variant))
                 {
-                    SuppAnnotationProvider.Annotate(variant);
+                    AlleleFreqProvider.Annotate(variant);
+                }
+            }
+            
+        }
+        private async void AddIds()
+        {
+            while (await _idChannel.Reader.WaitToReadAsync())
+            {
+                while (_idChannel.Reader.TryRead(out var variant))
+                {
+                    VariantIdProvider.Annotate(variant);
+                }
+            }
+            
+        }
+        
+        private async void AddClinical()
+        {
+            while (await _clinicalChannel.Reader.WaitToReadAsync())
+            {
+                while (_clinicalChannel.Reader.TryRead(out var variant))
+                {
+                    ClinicalAnnotationProvider.Annotate(variant);
                 }
             }
             

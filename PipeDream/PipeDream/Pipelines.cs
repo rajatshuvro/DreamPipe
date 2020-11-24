@@ -5,6 +5,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using PipeDream.Annotator;
 using PipeDream.VariantAnnotation;
+using PipeDream.VariantAnnotation.DataStructures;
 
 namespace PipeDream
 {

@@ -1,16 +1,18 @@
 using System.Threading;
+using PipeDream.VariantAnnotation.DataStructures;
 
-namespace PipeDream.VariantAnnotation
+namespace PipeDream.VariantAnnotation.Providers
 {
     public static class CoreAnnotationProvider
     {
-        private static byte _count=0;
+        private const byte RateLimit = 50;
+        private static byte _countToDelay= RateLimit;
         public static void Annotate(AnnotatedVariant variant)
         {
-            _count++;
-            if (_count == 10)
+            _countToDelay--;
+            if (_countToDelay == 0)
             {
-                _count = 0;
+                _countToDelay = RateLimit;
                 Thread.Sleep(1);
             }
             
