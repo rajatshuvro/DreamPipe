@@ -13,6 +13,10 @@ namespace LayRunner
             Console.WriteLine("Timing pipelines!");
             var pipelines = new Pipelines();
 
+            var concurrentTimeSpan = GetConcurrentRunTime(pipelines, iterationCount);
+            Console.WriteLine("Concurrent queue run time (seconds) per iteration:"+ concurrentTimeSpan.TotalSeconds/iterationCount);
+            var concurrentFileSize = new FileInfo(Pipelines.ConcurrentQueueJson).Length;
+
             var batchTimeSpan = GetBatchRunTime(pipelines, iterationCount);
             Console.WriteLine("Batch (parallel) run time (seconds) per iteration:" +
                               batchTimeSpan.TotalSeconds / DefaultIterationCount);
@@ -27,10 +31,6 @@ namespace LayRunner
             Console.WriteLine("serial run time (seconds) per iteration:"+ serialTimeSpan.TotalSeconds/DefaultIterationCount);
             var serialFileSize = new FileInfo(Pipelines.SerialJson).Length;
             
-            var concurrentTimeSpan = GetConcurrentRunTime(pipelines, iterationCount);
-            Console.WriteLine("Concurrent queue run time (seconds) per iteration:"+ concurrentTimeSpan.TotalSeconds/iterationCount);
-            var concurrentFileSize = new FileInfo(Pipelines.ConcurrentQueueJson).Length;
-
             var channelTimeSpan = GetChannelRunTime(pipelines, iterationCount);
             Console.WriteLine("Channel annotator run time (seconds) per iteration:"+ channelTimeSpan.TotalSeconds/iterationCount);
             var channelFileSize = new FileInfo(Pipelines.ChannelJson).Length;

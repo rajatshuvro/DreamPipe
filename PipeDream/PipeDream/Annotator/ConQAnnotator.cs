@@ -8,27 +8,27 @@ namespace PipeDream.Annotator
 {
     public class ConQAnnotator
     {
-        private ConcurrentQueue<AnnotatedVariant> _coreQueue;
-        private ConcurrentQueue<AnnotatedVariant> _alleleFreqQueue;
-        private ConcurrentQueue<AnnotatedVariant> _idQueue;
-        private ConcurrentQueue<AnnotatedVariant> _clinicalQueue;
+        private readonly ConcurrentQueue<AnnotatedVariant> _coreQueue;
+        private readonly ConcurrentQueue<AnnotatedVariant> _alleleFreqQueue;
+        private readonly ConcurrentQueue<AnnotatedVariant> _idQueue;
+        private readonly ConcurrentQueue<AnnotatedVariant> _clinicalQueue;
         private const int MaxCount = 1000;
-        //private SemaphoreSlim _producerSemaphore;
-        private SemaphoreSlim _coreConsumer;
-        private SemaphoreSlim _alleleConsumer;
-        private SemaphoreSlim _idConsumer;
-        private SemaphoreSlim _clinicalConsumer;
         
-        private SemaphoreSlim _coreProducer;
-        private SemaphoreSlim _alleleProducer;
-        private SemaphoreSlim _idProducer;
-        private SemaphoreSlim _clinicalProducer;
+        private readonly SemaphoreSlim _coreConsumer;
+        private readonly SemaphoreSlim _alleleConsumer;
+        private readonly SemaphoreSlim _idConsumer;
+        private readonly SemaphoreSlim _clinicalConsumer;
+        
+        private readonly SemaphoreSlim _coreProducer;
+        private readonly SemaphoreSlim _alleleProducer;
+        private readonly SemaphoreSlim _idProducer;
+        private readonly SemaphoreSlim _clinicalProducer;
         
         private bool _isCancelled;
-        private Task _coreTask;
-        private Task _alleleFreqTask;
-        private Task _idTask;
-        private Task _clinicalTask;
+        private readonly Task _coreTask;
+        private readonly Task _alleleFreqTask;
+        private readonly Task _idTask;
+        private readonly Task _clinicalTask;
         
         public ConQAnnotator(int n=MaxCount)
         {
@@ -37,7 +37,6 @@ namespace PipeDream.Annotator
             _idQueue = new ConcurrentQueue<AnnotatedVariant>();
             _clinicalQueue = new ConcurrentQueue<AnnotatedVariant>();
             
-            //_producerSemaphore = new SemaphoreSlim(n);
             _alleleProducer = new SemaphoreSlim(n);
             _coreProducer = new SemaphoreSlim(n);
             _idProducer = new SemaphoreSlim(n);
