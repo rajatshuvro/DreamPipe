@@ -8,53 +8,174 @@ namespace PipeDream.Annotator
 {
     public class ConQAnnotator
     {
-        private ConcurrentQueue<AnnotatedVariant> _variants;
+        private ConcurrentQueue<AnnotatedVariant> _coreQueue;
+        private ConcurrentQueue<AnnotatedVariant> _alleleFreqQueue;
+        private ConcurrentQueue<AnnotatedVariant> _idQueue;
+        private ConcurrentQueue<AnnotatedVariant> _clinicalQueue;
         private const int MaxCount = 1000;
-        private SemaphoreSlim _producerSemaphore;
-        private SemaphoreSlim _consumerSemaphore;
+        //private SemaphoreSlim _producerSemaphore;
+        private SemaphoreSlim _coreConsumer;
+        private SemaphoreSlim _alleleConsumer;
+        private SemaphoreSlim _idConsumer;
+        private SemaphoreSlim _clinicalConsumer;
+        
+        private SemaphoreSlim _coreProducer;
+        private SemaphoreSlim _alleleProducer;
+        private SemaphoreSlim _idProducer;
+        private SemaphoreSlim _clinicalProducer;
+        
         private bool _isCancelled;
-        private Task _annoTask;
+        private Task _coreTask;
+        private Task _alleleFreqTask;
+        private Task _idTask;
+        private Task _clinicalTask;
         
         public ConQAnnotator(int n=MaxCount)
         {
-            _variants = new ConcurrentQueue<AnnotatedVariant>();
-            _producerSemaphore = new SemaphoreSlim(n);
-            _consumerSemaphore = new SemaphoreSlim(0);
-            _annoTask = Task.Run(AnnotateAll);
+            _coreQueue = new ConcurrentQueue<AnnotatedVariant>();
+            _alleleFreqQueue = new ConcurrentQueue<AnnotatedVariant>();
+            _idQueue = new ConcurrentQueue<AnnotatedVariant>();
+            _clinicalQueue = new ConcurrentQueue<AnnotatedVariant>();
+            
+            //_producerSemaphore = new SemaphoreSlim(n);
+            _alleleProducer = new SemaphoreSlim(n);
+            _coreProducer = new SemaphoreSlim(n);
+            _idProducer = new SemaphoreSlim(n);
+            _clinicalProducer = new SemaphoreSlim(n);
+            
+            _alleleConsumer = new SemaphoreSlim(0);
+            _coreConsumer = new SemaphoreSlim(0);
+            _idConsumer = new SemaphoreSlim(0);
+            _clinicalConsumer = new SemaphoreSlim(0);
+            
+            _coreTask = Task.Run(CoreAnnotate);
+            _alleleFreqTask = Task.Run(AddAlleleFreq);
+            _idTask = Task.Run(AddIds);
+            _clinicalTask = Task.Run(AddClinical);
         }
 
         public void Complete()
         {
             _isCancelled = true;
-            if (_consumerSemaphore.CurrentCount > 0)
+            if (_coreConsumer.CurrentCount > 0)
             {
-                _consumerSemaphore.Release(_consumerSemaphore.CurrentCount);
-                _annoTask.Wait();
+                _coreConsumer.Release(_coreConsumer.CurrentCount);
+                _coreTask.Wait();
+            }
+            if (_alleleConsumer.CurrentCount > 0)
+            {
+                _alleleConsumer.Release(_alleleConsumer.CurrentCount);
+                _alleleFreqTask.Wait();
+            }
+            if (_idConsumer.CurrentCount > 0)
+            {
+                _idConsumer.Release(_idConsumer.CurrentCount);
+                _idTask.Wait();
+            }
+            if (_clinicalConsumer.CurrentCount > 0)
+            {
+                _clinicalConsumer.Release(_clinicalConsumer.CurrentCount);
+                _clinicalTask.Wait();
             }
 
         }
         public void Add(AnnotatedVariant variant)
         {
-            _producerSemaphore.Wait();//block if the concurrent queue has reached MaxCount
-            _variants.Enqueue(variant);
-            _consumerSemaphore.Release();
+            var coreSubmit = Task.Run(() =>
+            {
+                _coreProducer.Wait();
+                _coreQueue.Enqueue(variant);
+                _coreConsumer.Release();
+    
+            });
+            
+            var alleleSubmit = Task.Run(() =>
+            {
+                _alleleProducer.Wait();
+                _alleleFreqQueue.Enqueue(variant);
+                _alleleConsumer.Release();
+            });
+            
+            var idSubmit = Task.Run(() =>
+            {
+                _idProducer.Wait();
+                _idQueue.Enqueue(variant);
+                _idConsumer.Release();
+
+            });
+            var clinicalSubmit = Task.Run(() =>
+            {
+                _clinicalProducer.Wait();
+                _clinicalQueue.Enqueue(variant);
+                _clinicalConsumer.Release();
+
+            });
+            
+            coreSubmit.Wait();
+            alleleSubmit.Wait();
+            idSubmit.Wait();
+            clinicalSubmit.Wait();
         }
 
-        private void AnnotateAll()
+        private void CoreAnnotate()
         {
             while (true)
             {
-                _consumerSemaphore.Wait();
-                if (!_variants.TryDequeue(out var variant))
+                _coreConsumer.Wait();
+                if (!_coreQueue.TryDequeue(out var variant))
                 {
                     if (_isCancelled) break;
                     continue;
                 }
                 CoreAnnotationProvider.Annotate(variant);
+                _coreProducer.Release();
+            }
+            
+        }
+        
+        private void AddAlleleFreq()
+        {
+            while (true)
+            {
+                _alleleConsumer.Wait();
+                if (!_alleleFreqQueue.TryDequeue(out var variant))
+                {
+                    if (_isCancelled) break;
+                    continue;
+                }
                 AlleleFreqProvider.Annotate(variant);
+                _alleleProducer.Release();
+            }
+            
+        }
+        private void AddIds()
+        {
+            while (true)
+            {
+                _idConsumer.Wait();
+                if (!_idQueue.TryDequeue(out var variant))
+                {
+                    if (_isCancelled) break;
+                    continue;
+                }
                 VariantIdProvider.Annotate(variant);
+                _idProducer.Release();
+            }
+            
+        }
+        
+        private void AddClinical()
+        {
+            while (true)
+            {
+                _clinicalConsumer.Wait();
+                if (!_clinicalQueue.TryDequeue(out var variant))
+                {
+                    if (_isCancelled) break;
+                    continue;
+                }
                 ClinicalAnnotationProvider.Annotate(variant);
-                _producerSemaphore.Release();
+                _clinicalProducer.Release();
             }
             
         }
