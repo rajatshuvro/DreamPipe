@@ -5,7 +5,7 @@ namespace PipeDream.VariantAnnotation.Providers
 {
     public static class VariantIdProvider
     {
-        private const byte RateLimit = 20;
+        private const byte RateLimit = 60;
         private static byte _countToDelay= RateLimit;
         public static void Annotate(AnnotatedVariant variant)
         {

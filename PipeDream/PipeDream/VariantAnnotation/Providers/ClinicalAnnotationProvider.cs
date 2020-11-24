@@ -14,7 +14,7 @@ namespace PipeDream.VariantAnnotation.Providers
             "no interpretation for the single variant"
         };
 
-        private const byte RateLimit = 12;
+        private const byte RateLimit = 40;
         private static byte _countToDelay= RateLimit;
         public static void Annotate(AnnotatedVariant variant)
         {

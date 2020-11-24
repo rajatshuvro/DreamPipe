@@ -5,7 +5,7 @@ namespace PipeDream.VariantAnnotation.Providers
 {
     public static class AlleleFreqProvider
     {
-        private const byte RateLimit = 7;
+        private const byte RateLimit = 30;
         private static byte _countToDelay= RateLimit;
         public static void Annotate(AnnotatedVariant variant)
         {
