@@ -29,6 +29,7 @@ namespace PipeDream.VariantAnnotation.Providers
             var refAllele = variant.RefAllele;
             var altAllele = variant.AltAllele;
             var random = position ^ refAllele.GetHashCode() ^ altAllele.GetHashCode() ^ Utilities.Prime9;
+            if (random < 0) random = -random;
 
             var pathogenicity = PathogenicitySet[random % PathogenicitySet.Length];
             var reviewStatus = ReviewStatusSet[random % ReviewStatusSet.Length];

@@ -42,7 +42,7 @@ namespace PipeDream.Annotator
             _coreTask = Task.Run(CoreAnnotate);
             _alleleFreqTask = Task.Run(AddAlleleFrequencies);
             _idTask = Task.Run(AddIds);
-            _clinicalTask = Task.Run(AddClinicalAnno);
+            _clinicalTask = Task.Run(AddClinical);
         }
 
         public void Complete()
@@ -100,11 +100,11 @@ namespace PipeDream.Annotator
                     VariantIdProvider.Annotate(variant);    
                 }
                 
-                _idSemaphore.Release();
+                _idDone.Release();
             }
         }
         
-        private void AddClinicalAnno()
+        private void AddClinical()
         {
             while (true)
             {
@@ -115,7 +115,7 @@ namespace PipeDream.Annotator
                     ClinicalAnnotationProvider.Annotate(variant);    
                 }
                 
-                _clinicalSemaphore.Release();
+                _clinicalDone.Release();
             }
         }
 

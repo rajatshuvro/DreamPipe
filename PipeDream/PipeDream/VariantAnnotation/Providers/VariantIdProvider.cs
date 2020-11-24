@@ -20,12 +20,13 @@ namespace PipeDream.VariantAnnotation.Providers
             var refAllele = variant.RefAllele;
             var altAllele = variant.AltAllele;
             var random = position ^ refAllele.GetHashCode() ^ altAllele.GetHashCode() ^ Utilities.Prime9;
-
-            var count = random % 13;
+            if (random < 0) random = -random;
+            
+            var count = random % 13+1;
             var ids = new string[count];
             for (int i = 0; i < count; i++)
             {
-                ids[i] =$"rs{random:000000000}";
+                ids[i] =$"rs{random:0000000000}";
                 random ^= Utilities.Prime9;
             }
 

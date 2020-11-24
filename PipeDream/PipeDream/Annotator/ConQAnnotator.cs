@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Threading;
-using PipeDream.VariantAnnotation;
+using System.Threading.Tasks;
 using PipeDream.VariantAnnotation.DataStructures;
 using PipeDream.VariantAnnotation.Providers;
 
@@ -13,15 +13,14 @@ namespace PipeDream.Annotator
         private SemaphoreSlim _producerSemaphore;
         private SemaphoreSlim _consumerSemaphore;
         private bool _isCancelled;
-        private Thread _annoThread;
+        private Task _annoTask;
         
-        public ConQAnnotator(int n)
+        public ConQAnnotator(int n=MaxCount)
         {
             _variants = new ConcurrentQueue<AnnotatedVariant>();
-            _producerSemaphore = new SemaphoreSlim(MaxCount);
+            _producerSemaphore = new SemaphoreSlim(n);
             _consumerSemaphore = new SemaphoreSlim(0);
-            _annoThread = new Thread(()=> AnnotateAll());
-            _annoThread.Start();
+            _annoTask = Task.Run(AnnotateAll);
         }
 
         public void Complete()
@@ -30,7 +29,7 @@ namespace PipeDream.Annotator
             if (_consumerSemaphore.CurrentCount > 0)
             {
                 _consumerSemaphore.Release(_consumerSemaphore.CurrentCount);
-                _annoThread.Join();
+                _annoTask.Wait();
             }
 
         }

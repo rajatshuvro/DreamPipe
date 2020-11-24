@@ -52,6 +52,7 @@ namespace PipeDream.Annotator
             _idSemaphore.Release();
             _clinicalSemaphore.Release();
 
+            
             _coreTask.Wait();
             _alleleFreqTask.Wait();
             _idTask.Wait();
@@ -76,7 +77,7 @@ namespace PipeDream.Annotator
                 _alleleFreqSemaphore.Wait();
                 if (_isComplete) break;
                 AlleleFreqProvider.Annotate(_variant);
-                _alleleFreqSemaphore.Release();
+                _alleleFreqDone.Release();
             }
         }
         
@@ -87,7 +88,7 @@ namespace PipeDream.Annotator
                 _idSemaphore.Wait();
                 if (_isComplete) break;
                 VariantIdProvider.Annotate(_variant);
-                _idSemaphore.Release();
+                _idDone.Release();
             }
         }
         
@@ -98,7 +99,7 @@ namespace PipeDream.Annotator
                 _clinicalSemaphore.Wait();
                 if (_isComplete) break;
                 ClinicalAnnotationProvider.Annotate(_variant);
-                _clinicalSemaphore.Release();
+                _clinicalDone.Release();
             }
         }
 
