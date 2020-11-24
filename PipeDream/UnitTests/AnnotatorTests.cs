@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using PipeDream.Annotator;
 using PipeDream.VariantAnnotation;
+using PipeDream.VariantAnnotation.DataStructures;
 using Xunit;
 
 namespace UnitTests

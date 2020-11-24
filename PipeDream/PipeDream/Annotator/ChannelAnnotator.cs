@@ -2,6 +2,8 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using PipeDream.VariantAnnotation;
+using PipeDream.VariantAnnotation.DataStructures;
+using PipeDream.VariantAnnotation.Providers;
 
 namespace PipeDream.Annotator
 {

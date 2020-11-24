@@ -1,6 +1,7 @@
 using System.Threading;
+using PipeDream.VariantAnnotation.DataStructures;
 
-namespace PipeDream.VariantAnnotation
+namespace PipeDream.VariantAnnotation.Providers
 {
     public static class CoreAnnotationProvider
     {

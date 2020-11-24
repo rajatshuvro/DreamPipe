@@ -1,5 +1,7 @@
 using System.Threading;
 using PipeDream.VariantAnnotation;
+using PipeDream.VariantAnnotation.DataStructures;
+using PipeDream.VariantAnnotation.Providers;
 
 namespace PipeDream.Annotator
 {

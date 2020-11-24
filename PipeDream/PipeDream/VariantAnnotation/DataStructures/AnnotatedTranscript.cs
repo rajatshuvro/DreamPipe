@@ -1,4 +1,4 @@
-namespace PipeDream.VariantAnnotation
+namespace PipeDream.VariantAnnotation.DataStructures
 {
     public sealed class AnnotatedTranscript
     {
