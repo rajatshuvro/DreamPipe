@@ -52,7 +52,9 @@ namespace PipeDream.Annotator
                     continue;
                 }
                 CoreAnnotationProvider.Annotate(variant);
-                SuppAnnotationProvider.Annotate(variant);
+                AlleleFreqProvider.Annotate(variant);
+                VariantIdProvider.Annotate(variant);
+                ClinicalAnnotationProvider.Annotate(variant);
                 _producerSemaphore.Release();
             }
             

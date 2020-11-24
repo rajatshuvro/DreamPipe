@@ -21,7 +21,7 @@ namespace PipeDream.Annotator
         
         private List<AnnotatedVariant> _variants;
 
-        private readonly Task _coreAnnoTask;
+        private readonly Task _coreTask;
         private readonly Task _alleleFreqTask;
         private readonly Task _idTask;
         private readonly Task _clinicalTask;
@@ -39,7 +39,7 @@ namespace PipeDream.Annotator
             _idDone = new SemaphoreSlim(0);
             _clinicalDone = new SemaphoreSlim(0);
             
-            _coreAnnoTask = Task.Run(CoreAnnotate);
+            _coreTask = Task.Run(CoreAnnotate);
             _alleleFreqTask = Task.Run(AddAlleleFrequencies);
             _idTask = Task.Run(AddIds);
             _clinicalTask = Task.Run(AddClinicalAnno);
@@ -50,8 +50,10 @@ namespace PipeDream.Annotator
             _isCancelled = true;
             _coreSemaphore.Release();
             _alleleFreqSemaphore.Release();
+            _idSemaphore.Release();
+            _clinicalSemaphore.Release();
 
-            _coreAnnoTask.Wait();
+            _coreTask.Wait();
             _alleleFreqTask.Wait();
             _idTask.Wait();
             _clinicalTask.Wait();

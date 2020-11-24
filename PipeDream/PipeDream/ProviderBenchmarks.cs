@@ -25,11 +25,28 @@ namespace PipeDream
         }
 
         [Benchmark]
-        public void SaAnnotations()
+        public void AlleleFreqAnnotations()
         {
             foreach (var variant in Variants)
             {
-                SuppAnnotationProvider.Annotate(variant);
+                AlleleFreqProvider.Annotate(variant);
+            }
+        }
+        
+        [Benchmark]
+        public void IdAnnotations()
+        {
+            foreach (var variant in Variants)
+            {
+                VariantIdProvider.Annotate(variant);
+            }
+        }
+        [Benchmark]
+        public void ClinicalAnnotations()
+        {
+            foreach (var variant in Variants)
+            {
+                ClinicalAnnotationProvider.Annotate(variant);
             }
         }
     }
