@@ -1,11 +1,21 @@
+using System.Threading;
 using PipeDream.VariantAnnotation.DataStructures;
 
 namespace PipeDream.VariantAnnotation.Providers
 {
-    public class VariantIdProvider
+    public static class VariantIdProvider
     {
-        public static string[] Annotate(AnnotatedVariant variant)
+        private const byte RateLimit = 20;
+        private static byte _countToDelay= RateLimit;
+        public static void Annotate(AnnotatedVariant variant)
         {
+            _countToDelay--;
+            if (_countToDelay == 0)
+            {
+                _countToDelay = RateLimit;
+                Thread.Sleep(1);
+            }
+
             var position = variant.Position;
             var refAllele = variant.RefAllele;
             var altAllele = variant.AltAllele;
@@ -19,7 +29,7 @@ namespace PipeDream.VariantAnnotation.Providers
                 random ^= Utilities.Prime9;
             }
 
-            return ids;
+            variant.Ids = ids;
         }
     }
 }

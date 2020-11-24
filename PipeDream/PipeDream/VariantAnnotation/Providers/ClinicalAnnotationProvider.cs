@@ -1,8 +1,9 @@
+using System.Threading;
 using PipeDream.VariantAnnotation.DataStructures;
 
 namespace PipeDream.VariantAnnotation.Providers
 {
-    public class ClinicalAnnotationProvider
+    public static class ClinicalAnnotationProvider
     {
         public static readonly string[] PathogenicitySet = { "benign", "likely benign", "likely pathogenic", "pathogenic", "unknown"};
         public static readonly string[] ReviewStatusSet =
@@ -13,8 +14,17 @@ namespace PipeDream.VariantAnnotation.Providers
             "no interpretation for the single variant"
         };
 
-        public static ClinicalAnnotation Annotate(AnnotatedVariant variant)
+        private const byte RateLimit = 12;
+        private static byte _countToDelay= RateLimit;
+        public static void Annotate(AnnotatedVariant variant)
         {
+            _countToDelay--;
+            if (_countToDelay == 0)
+            {
+                _countToDelay = RateLimit;
+                Thread.Sleep(1);
+            }
+
             var position = variant.Position;
             var refAllele = variant.RefAllele;
             var altAllele = variant.AltAllele;
@@ -29,7 +39,7 @@ namespace PipeDream.VariantAnnotation.Providers
                 random ^= Utilities.Prime9;
             }
             
-            return new ClinicalAnnotation(pathogenicity, pubmedIds, reviewStatus);
+            variant.ClinicalAnnotation = new ClinicalAnnotation(pathogenicity, pubmedIds, reviewStatus);
         }
 
     }
