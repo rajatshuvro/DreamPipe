@@ -14,7 +14,10 @@ namespace PipeDream.Annotator
         private readonly Channel<AnnotatedVariant> _idChannel;
         private readonly Channel<AnnotatedVariant> _clinicalChannel;
         //private readonly StreamWriter _writer;
-        private Task _coreTask, _alleleFreqTask, _idTask, _clinicalTask;
+        private readonly Task _coreTask;
+        private readonly Task _alleleFreqTask;
+        private readonly Task _idTask;
+        private readonly Task _clinicalTask;
 
         public ChannelAnnotator( int size = DefaultSize)
         {
@@ -42,8 +45,13 @@ namespace PipeDream.Annotator
         {
             _coreChannel.Writer.Complete();
             _alleleFreqChannel.Writer.Complete();
+            _idChannel.Writer.Complete();
+            _clinicalChannel.Writer.Complete();
+            
             _coreTask.Wait();
             _alleleFreqTask.Wait();
+            _idTask.Wait();
+            _clinicalTask.Wait();
         }
 
         private async void CoreAnnotation()
@@ -53,10 +61,8 @@ namespace PipeDream.Annotator
                 while (_coreChannel.Reader.TryRead(out var variant))
                 {
                     CoreAnnotationProvider.Annotate(variant);
-                    //await _saChannel.Writer.WriteAsync(variant);
                 }
             }
-            //_saChannel.Writer.Complete();
         }
         
         private async void AddAlleleFreq()

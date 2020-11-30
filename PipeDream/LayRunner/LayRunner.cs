@@ -6,7 +6,7 @@ namespace LayRunner
 {
     public static class LayRunner
     {
-        private const int DefaultIterationCount = 1;
+        private const int DefaultIterationCount = 10;
         static void Main(string[] args)
         {
             var iterationCount = args.Length > 0 ? int.Parse(args[0]) : DefaultIterationCount; 
