@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PipeDream.Annotator;
 using PipeDream.VariantAnnotation;
@@ -46,6 +47,29 @@ namespace UnitTests
             Assert.Equal(serialJson, parallelJson);
         }
         
+        [Fact]
+        public void CompareOneOutput_batch_channel()
+        {
+            var position = 1234689;
+            var variant1 = AnnotatedVariant.Create(position);
+            var variant2 = AnnotatedVariant.Create(position);
+            
+            SerialAnnotator.Annotate(variant1);
+            var serialJson = Utf8Json.JsonSerializer.ToJsonString(variant1);
+            
+            var annotator = new BatchChannelAnnotator();
+            var annotatorTask = Task.Run(async () =>
+            {
+                await annotator.Submit(new List<AnnotatedVariant>(){variant2});
+                annotator.Complete();
+            });
+
+            annotatorTask.Wait();
+            
+            var parallelJson = Utf8Json.JsonSerializer.ToJsonString(variant2);
+            
+            Assert.Equal(serialJson, parallelJson);
+        }
         [Fact]
         public void CompareOneOutput_conQ()
         {
@@ -139,6 +163,37 @@ namespace UnitTests
                 {
                     await annotator.Submit(variant);
                 }    
+                annotator.Complete();
+            });
+
+            annotatorTask.Wait();
+            
+            for (int i = 0; i < variants_1.Count; i++)
+            {
+                var serialJson = Utf8Json.JsonSerializer.ToJsonString(variants_1[i]);
+                var parallelJson = Utf8Json.JsonSerializer.ToJsonString(variants_2[i]);
+            
+                Assert.Equal(serialJson, parallelJson);
+
+            }
+
+        }
+        [Fact]
+        public void CompareMany_batch_channel()
+        {
+            var count = 1000;
+            var variants_1 = PipeDream.VariantAnnotation.Utilities.GetVariants(count);
+            var variants_2 = PipeDream.VariantAnnotation.Utilities.DeepCopy(variants_1);
+
+            var annotator = new BatchChannelAnnotator();
+            foreach (var variant in variants_1)
+            {
+                SerialAnnotator.Annotate(variant);
+            }
+
+            var annotatorTask = Task.Run(async () =>
+            {
+                await annotator.Submit(variants_2);
                 annotator.Complete();
             });
 

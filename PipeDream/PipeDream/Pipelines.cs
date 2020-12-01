@@ -18,6 +18,7 @@ namespace PipeDream
         public const string ParallelJson = "/Users/rroy1/development/TestDatasets/outputs/ParallelAnnotation.json";
         public const string ConcurrentQueueJson = "/Users/rroy1/development/TestDatasets/outputs/ConcurrentQueueAnnotation.json";
         public const string ChannelJson = "/Users/rroy1/development/TestDatasets/outputs/ChannelAnnotation.json";
+        public const string BatchChannelJson = "/Users/rroy1/development/TestDatasets/outputs/BatchChannelAnnotation.json";
         public const string BatchJson = "/Users/rroy1/development/TestDatasets/outputs/BatchParallelAnnotation.json";
         
         private static readonly List<AnnotatedVariant> Variants = VariantAnnotation.Utilities.GetVariants(100_000);
@@ -84,6 +85,36 @@ namespace PipeDream
             }
         }
         [Benchmark]
+        public void BatchChannelAnnotation()
+        {
+            var fileName = BatchChannelJson;
+            var batchSize = 1000;
+            //var variantBatch = new List<AnnotatedVariant>(batchSize);
+            var copyVariants = PipeDream.VariantAnnotation.Utilities.DeepCopy(Variants);
+
+            var fileStream = File.Create(fileName);
+            
+            using (var writer = new BinaryWriter(fileStream))
+            {
+                var annotator = new BatchChannelAnnotator(batchSize);
+                var annotatorTask = Task.Run(async () =>
+                {
+                    await annotator.Submit(copyVariants);
+                    annotator.Complete();
+                });
+                    
+                annotatorTask.Wait();
+
+                foreach (var item in copyVariants)
+                {
+                    writer.Write(Utf8Json.JsonSerializer.Serialize(item));    
+                    writer.Write('\n');
+                }
+                
+            }
+        }
+        
+        [Benchmark]
         public void ConcurrentAnnotation()
         {
             var fileName = ConcurrentQueueJson;
@@ -105,7 +136,7 @@ namespace PipeDream
             }
         }
         [Benchmark]
-        public void BatchAnnotation()
+        public void BatchParallelAnnotation()
         {
             var fileName = BatchJson;
             var batchSize = 1000;

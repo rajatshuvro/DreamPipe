@@ -1,6 +1,5 @@
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using PipeDream.VariantAnnotation;
 using PipeDream.VariantAnnotation.DataStructures;
 using PipeDream.VariantAnnotation.Providers;
 
@@ -13,7 +12,6 @@ namespace PipeDream.Annotator
         private readonly Channel<AnnotatedVariant> _alleleFreqChannel;
         private readonly Channel<AnnotatedVariant> _idChannel;
         private readonly Channel<AnnotatedVariant> _clinicalChannel;
-        //private readonly StreamWriter _writer;
         private readonly Task _coreTask;
         private readonly Task _alleleFreqTask;
         private readonly Task _idTask;
@@ -21,7 +19,6 @@ namespace PipeDream.Annotator
 
         public ChannelAnnotator( int size = DefaultSize)
         {
-            //_writer = writer;
             _coreChannel = Channel.CreateBounded<AnnotatedVariant>(size);
             _alleleFreqChannel = Channel.CreateBounded<AnnotatedVariant>(size);
             _idChannel = Channel.CreateBounded<AnnotatedVariant>(size);
